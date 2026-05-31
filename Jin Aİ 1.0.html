@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enzo Jin AI - Kişiselleştirilebilir Yapay Zeka</title>
+    <style>
+        /* ==========================================================
+           1. 5 SANİYELİK FÜTÜRİSTİK AÇILIŞ EKRANI (SPLASH SCREEN)
+           ========================================================== */
+        #launcher-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0b0c10; /* Derin uzay siyahı */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* Her şeyin en üstünde durması için */
+            font-family: 'Courier New', Courier, monospace; /* Kodlama/Hacker teması */
+            color: #66fcf1; /* Neon mavi/yeşil tonu */
+            transition: opacity 1s ease, visibility 1s ease; /* Karartmalı kapanış efekti */
+        }
+        
+        .launcher-title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.7);
+            animation: pulse 1.5s infinite alternate;
+        }
+        
+        .launcher-subtitle {
+            font-size: 14px;
+            color: #c5a1ff; /* Şık bir mor tonu */
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        /* Dönen Siber Yükleme Animasyonu */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 252, 241, 0.1);
+            border-left-color: #66fcf1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+
+        /* Karartma tetiklendiğinde kullanılacak klas */
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* ==========================================================
+           2. ANA UYGULAMA STİLLERİ (HİÇ DOKUNULMADI)
+           ========================================================== */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 10px;
+        }
+        h2 { color: #1a1a1a; margin: 0; font-size: 22px; }
+        
+        .btn-settings {
+            background-color: #495057;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn-settings:hover { background-color: #343a40; }
+
+        .management-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .setting-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        .setting-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .input-group { display: flex; gap: 12px; margin-top: 8px; }
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .input-group input:focus { border-color: #4dadf7; }
+        
+        .btn-save {
+            background-color: #339af0;
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-save:hover { background-color: #228be6; }
+
+        .table-container {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            margin-top: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        th, td { padding: 8px 12px; border-bottom: 1px solid #dee2e6; }
+        th { background-color: #f1f3f5; color: #495057; }
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-delete:hover { background: #fa5252; }
+        
+        .chat-box {
+            height: 300px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fdfdfd;
+            margin-bottom: 15px;
+        }
+        .msg {
+            margin: 10px 0;
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 75%;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        .user-msg {
+            background-color: #e7f5ff;
+            color: #0b7285;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+        .bot-msg {
+            background-color: #f4fce3;
+            color: #5c940d;
+            margin-right: auto;
+            border-bottom-left-radius: 2px;
+        }
+        
+        .chat-input-row { display: flex; gap: 10px; }
+        .chat-input-row input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .btn-send {
+            background-color: #51cf66;
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-send:hover { background-color: #40c057; }
+    </style>
+</head>
+<body>
+
+    <!-- AÇILIŞ LUNCHER EKRANI -->
+    <div id="launcher-screen">
+        <div class="launcher-title">ENZO JIN AI LAUNCHER OPENING...</div>
+        <div class="launcher-subtitle">By Enzo Jin</div>
+        <div class="spinner"></div>
+    </div>
+
+    <!-- ANA UYGULAMA KONTEYNERI -->
+    <div class="container">
+        
+        <div class="header-area">
+            <h2 id="page-title">🤖 Enzo Jin AI Test Alanı</h2>
+            <button class="btn-settings" onclick="ayarlariAcKapat()">⚙️ Ayarlar</button>
+        </div>
+        
+        <div id="settings-panel" class="management-panel">
+            <div class="setting-section">
+                <h3 style="margin: 0; font-size: 15px; color: #333;">🪪 Botun İsmini Değiştir</h3>
+                <div class="input-group">
+                    <input type="text" id="bot-name-input" placeholder="Yeni bir isim yazın...">
+                    <button class="btn-save" onclick="ismiGuncelle()">İsmi Güncelle</button>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h3 style="margin: 0; font-size: 15px; color: #333;">🧠 Cümle Kütüphanesini Düzenle</h3>
+                <p style="font-size: 12px; color: #666; margin: 4px 0 0 0;">Bota yeni cümleler öğretin veya mevcut olanları silin.</p>
+                <div class="input-group">
+                    <input type="text" id="user-keyword" placeholder="Kullanıcı ne yazarsa? (Örn: merhaba)">
+                    <input type="text" id="user-response" placeholder="Bot ne cevap versin? (Örn: Selamlar!)">
+                    <button class="btn-save" onclick="hafizayaKaydet()">Cümle Ekle</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kullanıcı Yazarsa</th>
+                                <th>Botun Cevabı</th>
+                                <th style="width: 50px;">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rules-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div id="chat-box" class="chat-box"></div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-input" placeholder="Bana öğrettiğin bir cümleyi yaz..." onkeypress="handleEnter(event)">
+                <button class="btn-send" onclick="mesajAt()">Gönder</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // LAUNCHER TIMER (5 Saniye Sonra Karartarak Kapatma)
+        setTimeout(() => {
+            const launcher = document.getElementById('launcher-screen');
+            launcher.classList.add('fade-out'); // CSS ile yumuşakça şeffaflaştırır (1 saniye sürer)
+        }, 5000); // 5000 milisaniye = 5 saniye
+
+        // SİSTEM HAFIZA VE ÇALIŞMA MANTIĞI
+        let yapayZekaHafizasi = JSON.parse(localStorage.getItem('yapayZekaHafizasi')) || {};
+        let botAdi = localStorage.getItem('botAdi') || "Enzo Jin AI";
+
+        function ayarlariAcKapat() {
+            const panel = document.getElementById('settings-panel');
+            if (panel.style.display === "none" || panel.style.display === "") {
+                panel.style.display = "block";
+                document.getElementById('bot-name-input').value = botAdi;
+            } else {
+                panel.style.display = "none";
+            }
+        }
+
+        function ismiGuncelle() {
+            const nameInput = document.getElementById('bot-name-input');
+            const yeniIsim = nameInput.value.trim();
+
+            if (yeniIsim === "") {
+                alert("Lütfen geçerli bir isim girin!");
+                return;
+            }
+
+            botAdi = yeniIsim;
+            localStorage.setItem('botAdi', botAdi);
+            document.getElementById('page-title').textContent = `🤖 ${botAdi} Test Alanı`;
+            alert(`Yapay zekanın ismi başarıyla "${botAdi}" olarak değiştirildi!`);
+        }
+
+        function hafizayaKaydet() {
+            const keywordInput = document.getElementById('user-keyword');
+            const responseInput = document.getElementById('user-response');
+
+            const kelime = keywordInput.value.trim().toLowerCase();
+            const cevap = responseInput.value.trim();
+
+            if (kelime === "" || cevap === "") {
+                alert("Lütfen iki alanı da doldurun!");
+                return;
+            }
+
+            yapayZekaHafizasi[kelime] = cevap;
+            localStorage.setItem('yapayZekaHafizasi', JSON.stringify(yapayZekaHafizasi));
+
+            keywordInput.value = "";
+            responseInput.value = "";
+            tabloyuGuncelle();
+        }
+
+        function kuralSil(kelime) {
+            delete yapayZekaHafizasi[kelime];
+            localStorage.setItem('yapayZekaHafizasi', JSON.stringify(yapayZekaHafizasi));
+            tabloyuGuncelle();
+        }
+
+        function tabloyuGuncelle() {
+            const tbody = document.getElementById('rules-table-body');
+            tbody.innerHTML = "";
+
+            if (Object.keys(yapayZekaHafizasi).length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">Henüz hiç cümle eklenmedi.</td></tr>`;
+                return;
+            }
+
+            for (let kelime in yapayZekaHafizasi) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${kelime}</strong></td>
+                    <td>${yapayZekaHafizasi[kelime]}</td>
+                    <td><button class="btn-delete" onclick="kuralSil('${kelime}')">Sil</button></td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function mesajAt() {
+            const chatInput = document.getElementById('chat-input');
+            const mesaj = chatInput.value.trim();
+
+            if (mesaj === "") return;
+
+            mesajEkranaBas(mesaj, "user-msg", "Sen");
+            chatInput.value = "";
+
+            const arananCumle = mesaj.toLowerCase();
+            let botunCevabi = "Bunu henüz öğrenmedim. Sağ üstteki Ayarlar butonundan bana bu cümleyi öğretebilirsin!";
+            let bulundu = false;
+
+            for (let anahtar in yapayZekaHafizasi) {
+                if (arananCumle.includes(anahtar)) {
+                    botunCevabi = yapayZekaHafizasi[anahtar];
+                    bulundu = true;
+                    break;
+                }
+            }
+
+            setTimeout(() => {
+                mesajEkranaBas(botunCevabi, "bot-msg", botAdi);
+            }, 400);
+        }
+
+        function mesajEkranaBas(metin, classAdi, kim) {
+            const chatBox = document.getElementById('chat-box');
+            const div = document.createElement('div');
+            div.className = `msg ${classAdi}`;
+            div.innerHTML = `<strong>${kim}:</strong> ${metin}`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') mesajAt();
+        }
+
+        // İlk kurulumlar
+        document.getElementById('page-title').textContent = `🤖 ${botAdi} Test Alanı`;
+        tabloyuGuncelle();
+        mesajEkranaBas("Merhaba! Ben senin kişiselleştirilebilir asistanınım. Sağ üstteki Ayarlar butonuna tıklayarak ismimi değiştirebilir veya bana yeni cümleler öğretebilirsin!", "bot-msg", botAdi);
+    </script>
+</body>
+</html>
